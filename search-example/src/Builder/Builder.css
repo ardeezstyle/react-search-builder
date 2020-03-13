@@ -1,0 +1,108 @@
+.row-wrapper {
+
+}
+
+.row {
+  display: flex;
+}
+
+.conditions {
+  flex-grow: 1;
+  display: flex;
+  border: 1px solid #cbcbcb;
+  background: #fff;
+  padding: 8px 4px;
+  flex-grow: 1;
+}
+
+.condition {
+  display: flex;
+  background-color: #e5e5e5;
+  margin: 0 4px;
+  padding: 4px 8px;
+}
+.condition > div {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.operator {
+  display: flex;
+  align-items: center;
+  background-color: #d8d8d8;
+  margin: 0 4px;
+  padding: 4px 8px;
+  min-width: 60px;
+}
+.operator > select {
+  flex-grow: 1;
+  background: transparent;
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
+}
+
+.operator-top-level {
+  display: flex;
+  align-items: center;
+  background-color: #d8d8d8;
+  margin: 10px 0;
+  padding: 4px 8px;
+  min-width: 60px;
+  max-width: 60px;
+  border: 1px solid #afafaf;
+}
+.operator-top-level > select {
+  flex-grow: 1;
+  background: transparent;
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
+}
+
+.all-field-options {
+  display: flex;
+  padding: 4px 8px;
+}
+.all-field-options > select {
+  background: transparent;
+  -webkit-appearance: none;
+  border: none;
+  outline: none;
+  margin-right: 4px;
+}
+.input {
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  font-size: 14px;
+  color: 000;
+}
+
+.small-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.row button {
+  min-height: 50px;
+  min-width: 50px;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-remove {
+  background-color: #efefef;
+}
+.button-add {
+  background-color: #acacac;
+}
+
+.button-remove img {
+  width: 28px;
+}
+.button-add img {
+  width: 30px;
+}

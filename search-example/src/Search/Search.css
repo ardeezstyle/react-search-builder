@@ -1,0 +1,44 @@
+.editor {
+  border: 1px solid #cbcbcb;
+  background: #fff;
+  min-height: 60px;
+  display: block;
+  resize: none;
+  width: 100%;
+  padding: 8px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.builder {
+
+}
+
+
+.condition-horizontal {
+
+}
+
+.condition-group {
+  display: flex;
+}
+
+
+.hide {
+  display: none;
+}
+
+
+button.primary {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+  padding: 10px;
+  border-radius: 2px;
+  margin: 5px 0;
+  outline: none;
+  cursor: pointer;
+}
+button.primary:hover {
+  background-color: #007bcc;
+}
