@@ -1,0 +1,40 @@
+.auto-suggest-combo {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex-grow: 1;
+}
+
+.auto-suggest-combo input {
+  width: 100%;
+  outline: none;
+  font-size: 14px;
+  border: none;
+  vertical-align: middle;
+  background: transparent;
+  padding: 8px;
+}
+
+.auto-suggest-combo ul {
+  position: absolute;
+  min-width: 200px;
+  max-width: 100%;
+  z-index: 100;
+  background: #fff;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  top: 100%;
+  border: 1px solid #f4f3f3;
+  box-shadow: 0 0 5px #dcdcdc;
+}
+.auto-suggest-combo li {
+  padding: 8px;
+  cursor: pointer;
+  margin: 2px;
+}
+.auto-suggest-combo li:focus,
+.auto-suggest-combo li:hover {
+  background: #ebebeb;
+}
