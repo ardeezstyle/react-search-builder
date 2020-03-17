@@ -387,7 +387,7 @@ class Builder extends React.Component<any, IState> {
       // updatedConditions = [...conditions, condition, ...this.formCObject(newStr, updatedConditions, operator)];
       // console.log(updatedConditions);
       console.log('updatedConditions =>', updatedConditions);
-      this.setState(updatedState);
+      // this.setState(updatedState);
       this.formCObject(newStr, operator);
 
 
