@@ -1,0 +1,58 @@
+
+.Sidebar {
+  width: 90px;
+  box-shadow: 1px 0px 4px 0px rgba(0, 0, 0, .25);
+}
+.Sidebar .TopPanel {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+}
+
+.Logo {
+  flex-grow: 1;
+}
+
+.Logo img {
+  width: 36px;
+}
+
+.ExpandCollapseHandle {
+  position: absolute;
+  right: -18px;
+  cursor: pointer;
+}
+
+.ExpandCollapseHandle img {
+  width: 36px;
+}
+
+
+.Navigation {
+  margin-top: 60px;
+}
+
+.Navigation ul {
+  margin: 0;
+  padding: 0;
+}
+
+.Navigation li {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;
+  cursor: pointer;
+}
+
+.Navigation li img {
+  height: 24px;
+}
+
+.Navigation li .active {
+  position: absolute;
+  left: 0;
+  width: 15px;
+}

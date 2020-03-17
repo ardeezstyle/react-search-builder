@@ -6,11 +6,12 @@ class Autosuggest extends React.Component<any, any>  {
   state = {
     value: '',
     suggestions: [],
-    selected: ''
+    selected: '',
+    control: null
   }
 
   onChange = (e: any) => {
-    this.setState({value: e.target.value});
+    this.setState({value: e.target.value, control: e.target});
   }
 
   onKeyUp = (e: any) => {
@@ -19,23 +20,37 @@ class Autosuggest extends React.Component<any, any>  {
   }
 
   onKeyDown = (e: any) => {
-    if(e.keyCode === 9) {
-      this.doPassInfo();
+    if(e.keyCode === 9 || e.keyCode === 13) {
+      if(this.state.value !== '') {
+          this.doPassInfo();
+      } else {
+        this.setFocusOnControl();
+      }
     }
   }
 
   doPassInfo = (e?: any) => {
     let value = this.state.value;
     if(e) {
-      value = e.target.textContent
+      value = e.target.textContent;
     }
     this.props.onReceived(value);
-
+    this.setFocusOnControl();
     this.setState({
+      ...this.state,
       value: '',
       suggestions: [],
       selected: ''
     });
+  }
+
+  setFocusOnControl = () => {
+    if(this.state.control != null) {
+      window.setTimeout(() => {
+        const control:any = this.state.control;
+        control.focus();
+      }, 0);
+    }
   }
 
 
@@ -54,7 +69,7 @@ class Autosuggest extends React.Component<any, any>  {
           onChange={this.onChange}
           onKeyUp={this.onKeyUp}
           onKeyDown={this.onKeyDown} />
-        {this.state.value.length > 1 && this.state.suggestions.length > 0 ? this.getSuggestions() : null}
+        {this.state.value.length > 0 && this.state.suggestions.length > 0 ? this.getSuggestions() : null}
       </div>
     );
   }
