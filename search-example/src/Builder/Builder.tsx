@@ -1,13 +1,8 @@
 import * as React from 'react';
 import './Builder.css';
 
-import close from '../assets/close.png';
-import bookmark from '../assets/bookmark.png';
-import dropdown from '../assets/dropdown.png';
-import darrow from '../assets/darrow.png';
-import add from '../assets/add.png';
-import remove from '../assets/remove.png';
 import Autosuggest from '../Autosuggest/Autosuggest';
+import * as Images from '../assets/images';
 
 const DATA: any = [
   "Johnson and johnson",
@@ -42,6 +37,10 @@ class Builder extends React.Component<any, IState> {
     showAdvance: true,
     conds: []
   };
+
+  constructor(props: any) {
+    super(props);
+  }
 
   getIdx = (id: any) => {
     return this.state.conditions.findIndex(c => c.id === id);
@@ -121,7 +120,7 @@ class Builder extends React.Component<any, IState> {
           <option value="OR">OR</option>
           <option value="NOT">NOT</option>
         </select>
-        <img className="small-icon" src={darrow} alt="darrow" />
+        <img className="small-icon" src={Images.darrow} alt="darrow" />
       </div>
     }
     else return null
@@ -135,7 +134,7 @@ class Builder extends React.Component<any, IState> {
           <option value="OR">OR</option>
           <option value="NOT">NOT</option>
         </select>
-        <img className="small-icon" src={darrow} alt="darrow" />
+        <img className="small-icon" src={Images.darrow} alt="darrow" />
       </div>
     }
     else return null
@@ -149,7 +148,7 @@ class Builder extends React.Component<any, IState> {
         <option value="OR">Option 2</option>
         <option value="OR">Option 3</option>
       </select>
-      <img className="small-icon" src={dropdown} alt="darrow" />
+      <img className="small-icon" src={Images.dropdown} alt="darrow" />
     </div>
   }
 
@@ -378,7 +377,7 @@ class Builder extends React.Component<any, IState> {
       }
 
       const prevState: any = { ...this.state };
-      console.log(prevState);
+      // console.log(prevState);
       const updatedState = { ...prevState, conds: [...prevState.conds, condition]}
 
       //updatedConditions = [...this.state.conds, condition];
@@ -470,6 +469,9 @@ class Builder extends React.Component<any, IState> {
     })
   }
 
+  onSearch() {
+    this.props.onReceivedSearch({show: true, result: {}});
+  }
 
   public render() {
     this.sampleFunction();
@@ -488,8 +490,10 @@ class Builder extends React.Component<any, IState> {
         </div>
 
         {this.state.showAdvance ?
-          <div>
-          {this.state.conditions.map((c: any) => (
+          <React.Fragment>
+            <div className="heading">Medical Terms</div>
+            <div className="condition-group">
+              {this.state.conditions.map((c: any) => (
             <div key={c.id} className="row-wrapper">
               {this.getOperator(c)}
               <div className="row">
@@ -503,8 +507,8 @@ class Builder extends React.Component<any, IState> {
                           {this.allFieldOptions()}
                         </div>
                         <div>
-                          <div onClick={() => this.removeSingleCondition(c.id, idx)}><img className="small-icon" src={close} alt="close" /></div>
-                          <div><img className="small-icon" src={bookmark} alt="bookmark" /></div>
+                          <div onClick={() => this.removeSingleCondition(c.id, idx)}><img className="small-icon" src={Images.close} alt="close" /></div>
+                          <div><img className="small-icon" src={Images.bookmark} alt="bookmark" /></div>
                         </div>
                       </div>
                     </React.Fragment>
@@ -512,17 +516,23 @@ class Builder extends React.Component<any, IState> {
                   <Autosuggest data={DATA} onReceived={(data: string) => this.handleSuggestion(data, c.id)} />
                 </div>
                 {this.isLastElement(c) ? <React.Fragment>
-                  <button className="button-remove" onClick={() => this.removeConditionHandler(c.id)}><img src={remove} alt="remove" /></button>
-                  <button className="button-add" onClick={this.addConditionHandler}><img src={add} alt="add" /></button>
-                </React.Fragment> : <button className="button-remove" onClick={() => this.removeConditionHandler(c.id)}><img src={remove} alt="remove" /></button>}
+                  <button className="button-remove" onClick={() => this.removeConditionHandler(c.id)}><img src={Images.remove} alt="remove" /></button>
+                  <button className="button-add" onClick={this.addConditionHandler}><img src={Images.add} alt="add" /></button>
+                </React.Fragment> : <button className="button-remove" onClick={() => this.removeConditionHandler(c.id)}><img src={Images.remove} alt="remove" /></button>}
               </div>
             </div>
           ))}
-          </div>
+            </div>
+            <div className="heading">Exclude</div>
+            <input className="editor-e" placeholder="Enter Text" />
+            <button className="secondary">Add Filters</button>
+          </React.Fragment>
           : null
         }
 
-
+        <div>
+          <button className="primary" onClick={() => this.onSearch()}>Search</button>
+        </div>
       </div>
     );
   }

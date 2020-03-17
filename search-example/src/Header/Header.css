@@ -1,0 +1,50 @@
+.Header {
+  display: flex;
+  padding: 16px 24px;
+}
+
+.Header .Spacer {
+  flex-grow: 1;
+}
+
+.Header .Utility {
+  display: flex;
+  align-items: center;
+
+}
+
+.Header .Utility div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.Header .photo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.Header .Notification {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #EBF7FC;
+  text-align: center;
+  position: relative;
+  margin: 0 20px 0 0;
+}
+.Header .Notification .count {
+  position: absolute;
+  top: -25%;
+  right: -25%;
+}
+
+.Header .username {
+  font-family: Calibre;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 0px;
+  color: #22333B;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
