@@ -30,6 +30,7 @@ interface IState {
   expression?: '';
   valid: boolean;
   showAdvance?: boolean;
+  conds?: any[];
 }
 
 class Builder extends React.Component<any, IState> {
@@ -38,7 +39,8 @@ class Builder extends React.Component<any, IState> {
     conditions: [{ id: 1, operand: [] }],
     expression: '',
     valid: true,
-    showAdvance: true
+    showAdvance: true,
+    conds: []
   };
 
   getIdx = (id: any) => {
@@ -352,23 +354,89 @@ class Builder extends React.Component<any, IState> {
     return s.substring(1, len - 1);
   }
 
-  formCObject = (str: string) => {
-    const regex = /\bAND\b|\bOR\b/g;
+  formCObject = (str: string, o: string = '') => {
+    const regex = /\bAND\b|\bOR\b|\bNOT\b/g;
+    let condition: any;
 
-    const result = regex.exec(str);
-    console.log(result);
+    let updatedConditions: any[] = [];
 
-    // while ((m = regex.exec(str)) !== null) {
-    //   // This is necessary to avoid infinite loops with zero-width matches
-    //   if (m.index === regex.lastIndex) {
-    //     regex.lastIndex++;
-    //   }
+    const result: any = regex.exec(str);
+    let operator, operand, newStr;
+
+    // console.log(conditions);
+    // console.log(result);
+
+    if(result !== null) {
+      operator = result[0];
+      newStr = str.substring(result['index'] + operator.length).trim();
+      operand = str.substring(0, result['index']).trim();
+
+      if (o && o.length > 0) {
+        condition = {operand: operand, operator: o};
+      } else {
+        condition = {operand: operand};
+      }
+
+      const prevState: any = { ...this.state };
+      console.log(prevState);
+      const updatedState = { ...prevState, conds: [...prevState.conds, condition]}
+
+      //updatedConditions = [...this.state.conds, condition];
+      // updatedConditions = [...updatedConditions, {operand: }];
+
+      // updatedConditions = [...conditions, condition, ...this.formCObject(newStr, updatedConditions, operator)];
+      // console.log(updatedConditions);
+      console.log('updatedConditions =>', updatedConditions);
+      this.setState(updatedState);
+      this.formCObject(newStr, operator);
+
+
+
+    } else {
+      // updatedConditions = [...this.state.conds, {operand: str.trim()}];
+      // this.setState({
+      //   ...this.state,
+      //   conds: updatedConditions
+      // })
+    }
+
+
+    // if(result !== null) {
+    //   operator = result[0];
+    //   newStr = str.substring(result['index'] + operator.length).trim();
+    //   operand = str.substring(0, result['index']);
     //
-    //   // The result can be accessed through the `m`-variable.
-    //   m.forEach((match) => {});
+    //   condition = {
+    //     operand: operand,
+    //     operator: operator
+    //   }
+    //   // conditions.push({
+    //   //   operand: operand,
+    //   //   operator: operator
+    //   // })
+    //   //
+    //   // condition = {
+    //   //   operand: this.formCObject(newStr, conditions),
+    //   //   operator: operator
+    //   // }
+    //
+    //   conditions = [...conditions, this.formCObject(newStr, conditions)];
+    // } else {
+    //   conditions = [{operand: str.trim()}]
     // }
 
-    return result;
+
+    // console.log('conditions=> ', conditions);
+    //
+    //
+    // console.log('*****************');
+    // console.log('operand => ', operand);
+    // console.log('operator => ', operator);
+    // console.log('newStr => ', newStr);
+    // console.log('*****************');
+
+
+    //return updatedConditions;
     // if(regex.exec(str) === null) {
     //   return 'No parenthesis'
     // } else {
@@ -379,31 +447,32 @@ class Builder extends React.Component<any, IState> {
   extractCObject = (str: string) => {
     const regex = /\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g;
     if(regex.exec(str) === null) {
-      return this.formCObject(str);
+      this.formCObject(str);
+      return this.state.conds;
     } else {
       return 'Parenthesis'
     }
   }
 
   sampleFunction() {
-    const str = 'A AND B OR C';
+    const str = 'A AND B';
     let obj = this.extractCObject(str);
-
-
-    console.log(obj)
+    // console.log(obj);
   }
 
 
+
+
   handleSwitch = () => {
-this.setState({
-  ...this.state,
-  showAdvance: !this.state.showAdvance
-})
+    this.setState({
+      ...this.state,
+      showAdvance: !this.state.showAdvance
+    })
   }
 
 
   public render() {
-    // this.sampleFunction();
+    this.sampleFunction();
 
     return (
       <div>
