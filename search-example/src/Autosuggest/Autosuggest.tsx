@@ -69,7 +69,7 @@ class Autosuggest extends React.Component<any, any>  {
           onChange={this.onChange}
           onKeyUp={this.onKeyUp}
           onKeyDown={this.onKeyDown} />
-        {this.state.value.length > 1 && this.state.suggestions.length > 0 ? this.getSuggestions() : null}
+        {this.state.value.length > 0 && this.state.suggestions.length > 0 ? this.getSuggestions() : null}
       </div>
     );
   }
