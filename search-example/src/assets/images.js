@@ -23,6 +23,9 @@ import dropdown from './dropdown.svg';
 
 import tick from './tick.svg';
 
+import slider_top from './slider-top.png';
+import slider_body from './slider-body.png';
+
 export {
   trash,
   dots,
@@ -45,5 +48,7 @@ export {
   add,
   remove,
   tick,
-  BlueClose
+  BlueClose,
+  slider_top,
+  slider_body
 }

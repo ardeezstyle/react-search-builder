@@ -65,6 +65,7 @@ class Autosuggest extends React.Component<any, any>  {
     return (
       <div className="auto-suggest-combo">
         <input
+          placeholder="Enter Text"
           value={this.state.value}
           onChange={this.onChange}
           onKeyUp={this.onKeyUp}

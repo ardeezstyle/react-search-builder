@@ -3,6 +3,7 @@ import './Builder.css';
 
 import Autosuggest from '../Autosuggest/Autosuggest';
 import * as Images from '../assets/images';
+import Slider from '../Slider/Slider';
 
 const DATA: any = [
   "Johnson and johnson",
@@ -26,6 +27,8 @@ interface IState {
   valid: boolean;
   showAdvance?: boolean;
   conds?: any[];
+  showSlider?: boolean;
+  excludeConditions?: any[];
 }
 
 class Builder extends React.Component<any, IState> {
@@ -35,12 +38,10 @@ class Builder extends React.Component<any, IState> {
     expression: '',
     valid: true,
     showAdvance: true,
-    conds: []
+    conds: [],
+    showSlider: false,
+    excludeConditions: []
   };
-
-  constructor(props: any) {
-    super(props);
-  }
 
   getIdx = (id: any) => {
     return this.state.conditions.findIndex(c => c.id === id);
@@ -190,6 +191,27 @@ class Builder extends React.Component<any, IState> {
       conditions: updatedConditions
     })
     this.updateExpression();
+  }
+
+  handleExcludeSuggestion = (data: any) => {
+    console.log(data);
+    const prevState: any = { ...this.state };
+
+    let condition: any = {
+      operand: data
+    }
+
+    if (prevState.excludeConditions && prevState.excludeConditions.length > 0) {
+      condition = {
+        operand: data,
+        operator: 'AND'
+      };
+    } else {
+      prevState.excludeConditions = [];
+    }
+
+    const updatedState = {...prevState, excludeConditions : [...prevState.excludeConditions, condition] };
+    this.setState(updatedState);
   }
 
 
@@ -473,11 +495,72 @@ class Builder extends React.Component<any, IState> {
     this.props.onReceivedSearch({show: true, result: {}});
   }
 
+  handleSlider = (cn: any, id: any) => {
+    this.setState({
+      ...this.state,
+      showSlider: true
+    });
+    console.log(cn, id);
+  }
+
+  handleExcludeConditionOperatorChange = (e: any, cIdx: any) => {
+    // const updatedConditionOperator = { ...this.state.conditions[idx].operand[cIdx], operator: e.target.value };
+    // const updatedConditions = [...this.state.conditions];
+    // updatedConditions[idx].operand[cIdx] = updatedConditionOperator;
+    //
+    // this.setState({
+    //   ...this.state,
+    //   conditions: updatedConditions
+    // })
+    // this.updateExpression();
+  }
+
+  getExcludeConditionOperator(cn: any, idx: number) {
+    if (cn.operator) {
+      return <div className="operator">
+        <select value={cn.operator} onChange={(event) => this.handleExcludeConditionOperatorChange(event, idx)}>
+          <option value="AND">AND</option>
+          <option value="OR">OR</option>
+          <option value="NOT">NOT</option>
+        </select>
+        <img className="small-icon" src={Images.darrow} alt="darrow" />
+      </div>
+    }
+    else return null
+  }
+
+  handleExcludeConditions () {
+    const excludeConditions: any = this.state.excludeConditions;
+    if(excludeConditions && excludeConditions.length > 0) {
+      return excludeConditions.map((cn: any, idx: any) =>
+          <React.Fragment key={Math.random()}>
+            {this.getExcludeConditionOperator(cn, idx)}
+            <div className="condition">
+              <div>
+                <div>{cn.operand}</div>
+                {this.allFieldOptions()}
+              </div>
+              <div>
+                <div onClick={() => this.removeSingleCondition(cn.id, idx)}><img className="small-icon" src={Images.close} alt="close" /></div>
+                <div><img className="small-icon" src={Images.bookmark} alt="bookmark" /></div>
+              </div>
+            </div>
+          </React.Fragment>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  closeSlider = () => {
+    this.setState({ ...this.state, showSlider: false});
+  }
   public render() {
     this.sampleFunction();
 
     return (
       <div>
+        {this.state.showSlider ? <Slider status="open" closed={this.closeSlider}/> : <Slider status="close" />}
         <textarea className={this.state.valid ? "editor" : "editor error"} value={this.state.expression} onChange={this.onExpressionChanged} />
         <div className="flexbox">
           <div className="flexbox">
@@ -501,7 +584,7 @@ class Builder extends React.Component<any, IState> {
                   {c.operand.map((cn: any, idx: any) => (
                     <React.Fragment key={Math.random()}>
                       {this.getConditionOperator(cn, c.id, idx)}
-                      <div className="condition">
+                      <div className="condition" onClick={() => this.handleSlider(cn,idx)}>
                         <div>
                           <div>{cn.operand}</div>
                           {this.allFieldOptions()}
@@ -524,7 +607,11 @@ class Builder extends React.Component<any, IState> {
           ))}
             </div>
             <div className="heading">Exclude</div>
-            <input className="editor-e" placeholder="Enter Text" />
+            <div className="conditions">
+              {this.handleExcludeConditions()}
+              <Autosuggest data={DATA} onReceived={(data: string) => this.handleExcludeSuggestion(data)} />
+            </div>
+
             <button className="secondary">Add Filters</button>
           </React.Fragment>
           : null
