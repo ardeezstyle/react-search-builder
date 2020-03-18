@@ -19,16 +19,18 @@ interface ICondition {
   id: number;
   operator?: string;
   operand: ICondition[];
+  focus?: boolean
 }
 
 interface IState {
   conditions: ICondition[];
-  expression?: '';
+  expression?: string;
   valid: boolean;
   showAdvance?: boolean;
   conds?: any[];
   showSlider?: boolean;
   excludeConditions?: any[];
+  excludeControlFocus?: any
 }
 
 class Builder extends React.Component<any, IState> {
@@ -552,6 +554,17 @@ class Builder extends React.Component<any, IState> {
     }
   }
 
+  handleControlFocus = (bool: boolean = false, id: number) => {
+    const idx = this.getIdx(id);
+    const prevState: any = { ...this.state };
+    prevState.conditions[idx].focus = bool;
+    this.setState(prevState);
+  }
+
+  handleExcludeControlFocus = (bool: boolean = false) => {
+    this.setState({...this.state, excludeControlFocus: bool});
+  }
+
   closeSlider = () => {
     this.setState({ ...this.state, showSlider: false});
   }
@@ -561,7 +574,11 @@ class Builder extends React.Component<any, IState> {
     return (
       <div>
         {this.state.showSlider ? <Slider status="open" closed={this.closeSlider}/> : <Slider status="close" />}
-        <textarea className={this.state.valid ? "editor" : "editor error"} value={this.state.expression} onChange={this.onExpressionChanged} />
+        <input
+          className={this.state.valid ? "editor" : "editor error"}
+          value={this.state.expression}
+          placeholder="Enter Text"
+          onChange={this.onExpressionChanged} />
         <div className="flexbox">
           <div className="flexbox">
             <div className="button-switch">
@@ -576,11 +593,12 @@ class Builder extends React.Component<any, IState> {
           <React.Fragment>
             <div className="heading">Medical Terms</div>
             <div className="condition-group">
+
               {this.state.conditions.map((c: any) => (
             <div key={c.id} className="row-wrapper">
               {this.getOperator(c)}
               <div className="row">
-                <div className="conditions">
+                <div className={c.focus? "conditions focus" : "conditions"}>
                   {c.operand.map((cn: any, idx: any) => (
                     <React.Fragment key={Math.random()}>
                       {this.getConditionOperator(cn, c.id, idx)}
@@ -596,7 +614,10 @@ class Builder extends React.Component<any, IState> {
                       </div>
                     </React.Fragment>
                   ))}
-                  <Autosuggest data={DATA} onReceived={(data: string) => this.handleSuggestion(data, c.id)} />
+                  <Autosuggest
+                    data={DATA}
+                    onFocus={(data: any) => this.handleControlFocus(data, c.id)}
+                    onReceived={(data: string) => this.handleSuggestion(data, c.id)} />
                 </div>
                 {this.isLastElement(c) ? <React.Fragment>
                   <button className="button-remove" onClick={() => this.removeConditionHandler(c.id)}><img src={Images.remove} alt="remove" /></button>
@@ -605,19 +626,24 @@ class Builder extends React.Component<any, IState> {
               </div>
             </div>
           ))}
+
             </div>
             <div className="heading">Exclude</div>
-            <div className="conditions">
+            <div className={this.state.excludeControlFocus? "conditions focus" : "conditions"}>
               {this.handleExcludeConditions()}
-              <Autosuggest data={DATA} onReceived={(data: string) => this.handleExcludeSuggestion(data)} />
+              <Autosuggest
+                data={DATA}
+                onFocus={(data: any) => this.handleExcludeControlFocus(data)}
+                onReceived={(data: string) => this.handleExcludeSuggestion(data)} />
             </div>
-
-            <button className="secondary">Add Filters</button>
+            <div className="Actions">
+              <button className="secondary">Add Filters</button>
+            </div>
           </React.Fragment>
           : null
         }
 
-        <div>
+        <div className="Actions">
           <button className="primary" onClick={() => this.onSearch()}>Search</button>
         </div>
       </div>
