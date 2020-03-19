@@ -16,6 +16,7 @@ import susanBateson from './Susan Bateson.svg';
 import notification from './Notification.svg';
 
 import bookmark from './bookmark.svg';
+import bookmarkSelected from './bookmarked.svg';
 import close from './close.svg';
 import BlueClose from './BlueClose.svg';
 import darrow from './darrow.svg';
@@ -45,6 +46,7 @@ export {
   expand,
   file,
   bookmark,
+  bookmarkSelected,
   list,
   close,
   logo,

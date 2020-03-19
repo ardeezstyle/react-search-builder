@@ -4,6 +4,7 @@ import './Builder.css';
 import Autosuggest from '../Autosuggest/Autosuggest';
 import * as Images from '../assets/images';
 import Slider from '../Slider/Slider';
+import FilterSlider from '../FilterSlider/FilterSlider';
 
 const DATA: any = [
   "Johnson and johnson",
@@ -19,7 +20,8 @@ interface ICondition {
   id: number;
   operator?: string;
   operand: ICondition[];
-  focus?: boolean
+  focus?: boolean;
+  bookmarked?: boolean;
 }
 
 interface IState {
@@ -30,7 +32,8 @@ interface IState {
   conds?: any[];
   showSlider?: boolean;
   excludeConditions?: any[];
-  excludeControlFocus?: any
+  excludeControlFocus?: any;
+  showFilterSlider?: boolean;
 }
 
 class Builder extends React.Component<any, IState> {
@@ -42,8 +45,20 @@ class Builder extends React.Component<any, IState> {
     showAdvance: true,
     conds: [],
     showSlider: false,
-    excludeConditions: []
+    excludeConditions: [],
+    showFilterSlider: false
   };
+
+    componentDidMount() {
+        const conditions: any = localStorage.getItem('sbstate');
+        if(conditions) {
+            const cnObj = JSON.parse(conditions);
+            this.setState({
+                ...this.state,
+                conditions: cnObj
+            });
+        }
+    }
 
   getIdx = (id: any) => {
     return this.state.conditions.findIndex(c => c.id === id);
@@ -494,6 +509,7 @@ class Builder extends React.Component<any, IState> {
   }
 
   onSearch() {
+    localStorage.setItem('sbstate', JSON.stringify(this.state.conditions));
     this.props.onReceivedSearch({show: true, result: {}});
   }
 
@@ -503,6 +519,12 @@ class Builder extends React.Component<any, IState> {
       showSlider: true
     });
     console.log(cn, id);
+  }
+  handleFilterSlider = () => {
+    this.setState({
+      ...this.state,
+      showFilterSlider: true
+    });
   }
 
   handleExcludeConditionOperatorChange = (e: any, cIdx: any) => {
@@ -520,12 +542,9 @@ class Builder extends React.Component<any, IState> {
   getExcludeConditionOperator(cn: any, idx: number) {
     if (cn.operator) {
       return <div className="operator">
-        <select value={cn.operator} onChange={(event) => this.handleExcludeConditionOperatorChange(event, idx)}>
-          <option value="AND">AND</option>
+        <select value={cn.operator}>
           <option value="OR">OR</option>
-          <option value="NOT">NOT</option>
         </select>
-        <img className="small-icon" src={Images.darrow} alt="darrow" />
       </div>
     }
     else return null
@@ -537,15 +556,17 @@ class Builder extends React.Component<any, IState> {
       return excludeConditions.map((cn: any, idx: any) =>
           <React.Fragment key={Math.random()}>
             {this.getExcludeConditionOperator(cn, idx)}
-            <div className="condition">
-              <div>
-                <div>{cn.operand}</div>
-                {this.allFieldOptions()}
-              </div>
-              <div>
-                <div onClick={() => this.removeSingleCondition(cn.id, idx)}><img className="small-icon" src={Images.close} alt="close" /></div>
-                <div><img className="small-icon" src={Images.bookmark} alt="bookmark" /></div>
-              </div>
+            <div className="condition-wrapper">
+                <div className="condition">
+                  <div>
+                    <div>{cn.operand}</div>
+                    {this.allFieldOptions()}
+                  </div>
+                  <div>
+                    <div onClick={() => this.removeSingleCondition(cn.id, idx)}><img className="small-icon" src={Images.close} alt="close" /></div>
+                    <div><img className="small-icon" src={Images.bookmark} alt="bookmark" /></div>
+                  </div>
+                </div>
             </div>
           </React.Fragment>
       );
@@ -568,12 +589,24 @@ class Builder extends React.Component<any, IState> {
   closeSlider = () => {
     this.setState({ ...this.state, showSlider: false});
   }
+  closeFilterSlider = () => {
+    this.setState({ ...this.state, showFilterSlider: false});
+  }
+
+  handleBookmark = (cn:any, id: number, cIdx: number) => {
+      const idx = this.getIdx(id);
+      const prevState = { ...this.state };
+      prevState.conditions[idx].operand[cIdx] = { ...prevState.conditions[idx].operand[cIdx], bookmarked: !prevState.conditions[idx].operand[cIdx].bookmarked };
+      this.setState(prevState);
+  }
+
   public render() {
     this.sampleFunction();
 
     return (
       <div className="SearchComponent">
         {this.state.showSlider ? <Slider status="open" closed={this.closeSlider}/> : <Slider status="close" />}
+        {this.state.showFilterSlider ? <FilterSlider status="open" closed={this.closeFilterSlider}/> : <FilterSlider status="close" />}
         <input
           className={this.state.valid ? "editor" : "editor error"}
           value={this.state.expression}
@@ -602,15 +635,19 @@ class Builder extends React.Component<any, IState> {
                   {c.operand.map((cn: any, idx: any) => (
                     <React.Fragment key={Math.random()}>
                       {this.getConditionOperator(cn, c.id, idx)}
-                      <div className="condition" onClick={() => this.handleSlider(cn,idx)}>
-                        <div>
-                          <div>{cn.operand}</div>
-                          {this.allFieldOptions()}
-                        </div>
-                        <div>
-                          <div onClick={() => this.removeSingleCondition(c.id, idx)}><img className="small-icon" src={Images.close} alt="close" /></div>
-                          <div><img className="small-icon" src={Images.bookmark} alt="bookmark" /></div>
-                        </div>
+                      <div className="condition-wrapper">
+                          <div className="condition">
+                            <div>
+                              <div className="cursor-handle" onClick={() => this.handleSlider(cn,idx)}>{cn.operand}</div>
+                              {this.allFieldOptions()}
+                            </div>
+                            <div>
+                                <div onClick={() => this.removeSingleCondition(c.id, idx)}><img className="small-icon" src={Images.close} alt="close" /></div>
+                                <div onClick={() => this.handleBookmark(cn, c.id, idx)}>
+                                    <img className="small-icon" src={cn && cn.bookmarked ? Images.bookmarkSelected : Images.bookmark} alt="bookmark" />
+                                </div>
+                            </div>
+                          </div>
                       </div>
                     </React.Fragment>
                   ))}
@@ -619,7 +656,7 @@ class Builder extends React.Component<any, IState> {
                     onFocus={(data: any) => this.handleControlFocus(data, c.id)}
                     onReceived={(data: string) => this.handleSuggestion(data, c.id)} />
                 </div>
-                {this.isLastElement(c) ? <React.Fragment>
+                {this.isLastElement(c) ? this.isFirstElement(c) ? <button className="button-add" onClick={this.addConditionHandler}><img src={Images.add} alt="add" /></button> : <React.Fragment>
                   <button className="button-remove" onClick={() => this.removeConditionHandler(c.id)}><img src={Images.remove} alt="remove" /></button>
                   <button className="button-add" onClick={this.addConditionHandler}><img src={Images.add} alt="add" /></button>
                 </React.Fragment> : <button className="button-remove" onClick={() => this.removeConditionHandler(c.id)}><img src={Images.remove} alt="remove" /></button>}
@@ -637,7 +674,7 @@ class Builder extends React.Component<any, IState> {
                 onReceived={(data: string) => this.handleExcludeSuggestion(data)} />
             </div>
             <div className="Actions">
-              <button className="secondary">Add Filters</button>
+              <button className="secondary" onClick={this.handleFilterSlider}>Add Filters</button>
             </div>
           </React.Fragment>
           : null

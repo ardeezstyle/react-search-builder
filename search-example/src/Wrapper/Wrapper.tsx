@@ -13,13 +13,19 @@ class Wrapper extends React.Component<any, any>  {
     activeTab: 0
   }
 
+  componentDidMount() {
+      localStorage.removeItem('sbstate');
+  }
   onSearch = (data: any) => {
     const results = [...this.state.results, data.result];
     this.setState({...this.state, showSearchResult: data.show, results: results, activeTab: 0});
   }
 
   handleSearchTab = () => {
-    this.setState({...this.state, showSearchResult: false, activeTab: -1});
+      this.setState({
+          ...this.state,
+          showSearchResult: false,
+          activeTab: -1});
   }
   handleResultTab = (id: number) => {
     this.setState({...this.state, showSearchResult: true, activeTab: id});
