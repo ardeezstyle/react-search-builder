@@ -1,3 +1,6 @@
+.SearchComponent {
+  padding: 24px; 
+}
 .row-wrapper {
 
 }
@@ -161,7 +164,7 @@
   width: 20px;
 }
 .button-add img {
-  width: 20px;
+  width: 23px;
 }
 
 .editor {

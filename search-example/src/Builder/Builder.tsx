@@ -572,7 +572,7 @@ class Builder extends React.Component<any, IState> {
     this.sampleFunction();
 
     return (
-      <div>
+      <div className="SearchComponent">
         {this.state.showSlider ? <Slider status="open" closed={this.closeSlider}/> : <Slider status="close" />}
         <input
           className={this.state.valid ? "editor" : "editor error"}
