@@ -53,7 +53,12 @@ class Autosuggest extends React.Component<any, any>  {
     }
   }
 
-
+  onControlFocus = () => {
+    this.props.onFocus(true);
+  }
+  onControlBlur = () => {
+    this.props.onFocus(false);
+  }
 
   getSuggestions() {
     return <ul>
@@ -65,10 +70,13 @@ class Autosuggest extends React.Component<any, any>  {
     return (
       <div className="auto-suggest-combo">
         <input
+          placeholder="Enter Text"
           value={this.state.value}
           onChange={this.onChange}
           onKeyUp={this.onKeyUp}
-          onKeyDown={this.onKeyDown} />
+          onKeyDown={this.onKeyDown}
+          onBlur={this.onControlBlur}
+          onFocus={this.onControlFocus} />
         {this.state.value.length > 0 && this.state.suggestions.length > 0 ? this.getSuggestions() : null}
       </div>
     );

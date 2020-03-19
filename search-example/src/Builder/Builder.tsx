@@ -3,6 +3,7 @@ import './Builder.css';
 
 import Autosuggest from '../Autosuggest/Autosuggest';
 import * as Images from '../assets/images';
+import Slider from '../Slider/Slider';
 
 const DATA: any = [
   "Johnson and johnson",
@@ -18,14 +19,18 @@ interface ICondition {
   id: number;
   operator?: string;
   operand: ICondition[];
+  focus?: boolean
 }
 
 interface IState {
   conditions: ICondition[];
-  expression?: '';
+  expression?: string;
   valid: boolean;
   showAdvance?: boolean;
   conds?: any[];
+  showSlider?: boolean;
+  excludeConditions?: any[];
+  excludeControlFocus?: any
 }
 
 class Builder extends React.Component<any, IState> {
@@ -35,12 +40,10 @@ class Builder extends React.Component<any, IState> {
     expression: '',
     valid: true,
     showAdvance: true,
-    conds: []
+    conds: [],
+    showSlider: false,
+    excludeConditions: []
   };
-
-  constructor(props: any) {
-    super(props);
-  }
 
   getIdx = (id: any) => {
     return this.state.conditions.findIndex(c => c.id === id);
@@ -190,6 +193,27 @@ class Builder extends React.Component<any, IState> {
       conditions: updatedConditions
     })
     this.updateExpression();
+  }
+
+  handleExcludeSuggestion = (data: any) => {
+    console.log(data);
+    const prevState: any = { ...this.state };
+
+    let condition: any = {
+      operand: data
+    }
+
+    if (prevState.excludeConditions && prevState.excludeConditions.length > 0) {
+      condition = {
+        operand: data,
+        operator: 'AND'
+      };
+    } else {
+      prevState.excludeConditions = [];
+    }
+
+    const updatedState = {...prevState, excludeConditions : [...prevState.excludeConditions, condition] };
+    this.setState(updatedState);
   }
 
 
@@ -473,12 +497,88 @@ class Builder extends React.Component<any, IState> {
     this.props.onReceivedSearch({show: true, result: {}});
   }
 
+  handleSlider = (cn: any, id: any) => {
+    this.setState({
+      ...this.state,
+      showSlider: true
+    });
+    console.log(cn, id);
+  }
+
+  handleExcludeConditionOperatorChange = (e: any, cIdx: any) => {
+    // const updatedConditionOperator = { ...this.state.conditions[idx].operand[cIdx], operator: e.target.value };
+    // const updatedConditions = [...this.state.conditions];
+    // updatedConditions[idx].operand[cIdx] = updatedConditionOperator;
+    //
+    // this.setState({
+    //   ...this.state,
+    //   conditions: updatedConditions
+    // })
+    // this.updateExpression();
+  }
+
+  getExcludeConditionOperator(cn: any, idx: number) {
+    if (cn.operator) {
+      return <div className="operator">
+        <select value={cn.operator} onChange={(event) => this.handleExcludeConditionOperatorChange(event, idx)}>
+          <option value="AND">AND</option>
+          <option value="OR">OR</option>
+          <option value="NOT">NOT</option>
+        </select>
+        <img className="small-icon" src={Images.darrow} alt="darrow" />
+      </div>
+    }
+    else return null
+  }
+
+  handleExcludeConditions () {
+    const excludeConditions: any = this.state.excludeConditions;
+    if(excludeConditions && excludeConditions.length > 0) {
+      return excludeConditions.map((cn: any, idx: any) =>
+          <React.Fragment key={Math.random()}>
+            {this.getExcludeConditionOperator(cn, idx)}
+            <div className="condition">
+              <div>
+                <div>{cn.operand}</div>
+                {this.allFieldOptions()}
+              </div>
+              <div>
+                <div onClick={() => this.removeSingleCondition(cn.id, idx)}><img className="small-icon" src={Images.close} alt="close" /></div>
+                <div><img className="small-icon" src={Images.bookmark} alt="bookmark" /></div>
+              </div>
+            </div>
+          </React.Fragment>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  handleControlFocus = (bool: boolean = false, id: number) => {
+    const idx = this.getIdx(id);
+    const prevState: any = { ...this.state };
+    prevState.conditions[idx].focus = bool;
+    this.setState(prevState);
+  }
+
+  handleExcludeControlFocus = (bool: boolean = false) => {
+    this.setState({...this.state, excludeControlFocus: bool});
+  }
+
+  closeSlider = () => {
+    this.setState({ ...this.state, showSlider: false});
+  }
   public render() {
     this.sampleFunction();
 
     return (
-      <div>
-        <textarea className={this.state.valid ? "editor" : "editor error"} value={this.state.expression} onChange={this.onExpressionChanged} />
+      <div className="SearchComponent">
+        {this.state.showSlider ? <Slider status="open" closed={this.closeSlider}/> : <Slider status="close" />}
+        <input
+          className={this.state.valid ? "editor" : "editor error"}
+          value={this.state.expression}
+          placeholder="Enter Text"
+          onChange={this.onExpressionChanged} />
         <div className="flexbox">
           <div className="flexbox">
             <div className="button-switch">
@@ -493,15 +593,16 @@ class Builder extends React.Component<any, IState> {
           <React.Fragment>
             <div className="heading">Medical Terms</div>
             <div className="condition-group">
+
               {this.state.conditions.map((c: any) => (
             <div key={c.id} className="row-wrapper">
               {this.getOperator(c)}
               <div className="row">
-                <div className="conditions">
+                <div className={c.focus? "conditions focus" : "conditions"}>
                   {c.operand.map((cn: any, idx: any) => (
                     <React.Fragment key={Math.random()}>
                       {this.getConditionOperator(cn, c.id, idx)}
-                      <div className="condition">
+                      <div className="condition" onClick={() => this.handleSlider(cn,idx)}>
                         <div>
                           <div>{cn.operand}</div>
                           {this.allFieldOptions()}
@@ -513,7 +614,10 @@ class Builder extends React.Component<any, IState> {
                       </div>
                     </React.Fragment>
                   ))}
-                  <Autosuggest data={DATA} onReceived={(data: string) => this.handleSuggestion(data, c.id)} />
+                  <Autosuggest
+                    data={DATA}
+                    onFocus={(data: any) => this.handleControlFocus(data, c.id)}
+                    onReceived={(data: string) => this.handleSuggestion(data, c.id)} />
                 </div>
                 {this.isLastElement(c) ? <React.Fragment>
                   <button className="button-remove" onClick={() => this.removeConditionHandler(c.id)}><img src={Images.remove} alt="remove" /></button>
@@ -522,15 +626,24 @@ class Builder extends React.Component<any, IState> {
               </div>
             </div>
           ))}
+
             </div>
             <div className="heading">Exclude</div>
-            <input className="editor-e" placeholder="Enter Text" />
-            <button className="secondary">Add Filters</button>
+            <div className={this.state.excludeControlFocus? "conditions focus" : "conditions"}>
+              {this.handleExcludeConditions()}
+              <Autosuggest
+                data={DATA}
+                onFocus={(data: any) => this.handleExcludeControlFocus(data)}
+                onReceived={(data: string) => this.handleExcludeSuggestion(data)} />
+            </div>
+            <div className="Actions">
+              <button className="secondary">Add Filters</button>
+            </div>
           </React.Fragment>
           : null
         }
 
-        <div>
+        <div className="Actions">
           <button className="primary" onClick={() => this.onSearch()}>Search</button>
         </div>
       </div>

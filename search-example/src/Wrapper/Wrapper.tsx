@@ -29,9 +29,20 @@ class Wrapper extends React.Component<any, any>  {
     const curState: any = {...this.state};
 
     return curState.results.map((res: any, idx: number) =>
-      <div key={idx} className={curState.activeTab === idx ? "Tab Active" : "Tab"} onClick={() => this.handleResultTab(idx)}>
-        Search {idx + 1}
-        <img src={Images.tick} title="" alt=""></img>
+      <div key={idx} className={curState.activeTab === idx ? "Tab nopad Active" : "Tab nopad"} onClick={() => this.handleResultTab(idx)}>
+        <div className="search-tab">
+          <div><img src={Images.star} title="" alt=""></img></div>
+          <div className="result-count">
+            <div>25 Results</div>
+            <div className="result-count-dist">
+              <img src={Images.circleTick} title="" alt=""></img>
+              <span>22</span>
+              <img src={Images.circleCross} title="" alt=""></img>
+              <span>3</span>
+            </div>
+          </div>
+          <div><img src={Images.BlueClose} title="" alt=""></img></div>
+        </div>
       </div>
     );
   }
@@ -65,7 +76,7 @@ class Wrapper extends React.Component<any, any>  {
               </div>
               <div className="TabContent">
                 {this.state.showSearchResult ?
-                  <div>Show Results</div>
+                  <img className="search-result" src={Images.searchResult} title="" alt="" />
                   :
                   <Builder onReceivedSearch={(data: any) => this.onSearch(data)}/>
                 }
