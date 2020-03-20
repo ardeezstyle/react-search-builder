@@ -11,7 +11,7 @@ class FilterSlider extends React.Component<any, any>  {
     return (
       <div className={this.props.status === 'open' ? "Slider Open" : "Slider"}>
         <div onClick={this.onClose}>
-          <img src={Images.slider_top} alt="darrow" />
+          <img src={Images.filterSlider} alt="darrow" />
         </div>
       </div>
     );

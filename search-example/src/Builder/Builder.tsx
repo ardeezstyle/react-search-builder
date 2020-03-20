@@ -50,12 +50,13 @@ class Builder extends React.Component<any, IState> {
   };
 
     componentDidMount() {
-        const conditions: any = localStorage.getItem('sbstate');
-        if(conditions) {
-            const cnObj = JSON.parse(conditions);
+        const sbstate: any = localStorage.getItem('sbstate');
+        if(sbstate) {
+            const sbstateObj = JSON.parse(sbstate);
             this.setState({
                 ...this.state,
-                conditions: cnObj
+                conditions: sbstateObj.conditions,
+                excludeConditions: sbstateObj.exclude
             });
         }
     }
@@ -509,7 +510,12 @@ class Builder extends React.Component<any, IState> {
   }
 
   onSearch() {
-    localStorage.setItem('sbstate', JSON.stringify(this.state.conditions));
+    const sbstate = {
+        conditions: this.state.conditions,
+        exclude: this.state.excludeConditions
+    };
+
+    localStorage.setItem('sbstate', JSON.stringify(sbstate));
     this.props.onReceivedSearch({show: true, result: {}});
   }
 
