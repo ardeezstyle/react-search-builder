@@ -6,6 +6,19 @@ import * as Images from '../assets/images';
 import Slider from '../Slider/Slider';
 import FilterSlider from '../FilterSlider/FilterSlider';
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 const DATA: any = [
     "Johnson and johnson",
     "GTemp",
@@ -13,7 +26,19 @@ const DATA: any = [
     "Viral Vaccines",
     "Flu Vaccines",
     "Pfizer",
-    "TheroZ"
+    "TheroZ",
+    "Flu Vaccine",
+    "Flu Vaccine Effectiveness",
+    "Universal Flu Vaccine",
+    "Viral",
+    "Viral Infection",
+    "Viral Pneumonia",
+    "Viral Hepatitis",
+    "Virus",
+    "Influenza Virus",
+    "Zika Virus",
+    "Corona Virus",
+    "Virus Infection"
 ];
 
 interface ICondition {

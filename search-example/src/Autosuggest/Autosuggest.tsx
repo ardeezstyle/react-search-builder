@@ -10,8 +10,6 @@ class Autosuggest extends React.Component<any, any>  {
         control: null
     }
 
-
-
     constructor(props: any) {
         super(props);
         this.ref = React.createRef();
@@ -24,9 +22,13 @@ class Autosuggest extends React.Component<any, any>  {
     onKeyUp = (e: any) => {
         const suggestions = this.props.data.filter((item: string) => item.toLowerCase().indexOf(this.state.value.toLowerCase()) > -1);
         const key = e.keyCode;
-        this.setState({ suggestions: [...suggestions] }, () => {
+
+        let suggestionsToBeShown = suggestions;
+        if(suggestions.length > 6) {
+            suggestionsToBeShown = suggestions.slice(0,6);
+        }
+        this.setState({ suggestions: [...suggestionsToBeShown] }, () => {
             if (key === 40 && this.state.suggestions.length > 0) {
-                console.log(this.ref);
                 this.ref.current.childNodes[0].focus();
             }
         });
