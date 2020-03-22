@@ -37,4 +37,5 @@
 .auto-suggest-combo li:focus,
 .auto-suggest-combo li:hover {
   background: #ebebeb;
+  outline: none;
 }
