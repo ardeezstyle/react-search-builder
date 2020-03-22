@@ -27,7 +27,7 @@ import tick from './tick.svg';
 import slider_top from './slider-top.png';
 import slider_body from './slider-body.png';
 
-import searchResult from './searchResult.png';
+import searchResult from './SearchResult.png';
 
 import circleCross from './circleCross.svg';
 import circleTick from './circleTick.svg';
@@ -37,6 +37,12 @@ import star from './Star.svg';
 import filterSlider from './filterSlider.png';
 
 import CloseSlider from './CloseSlider.svg';
+
+import next from './next.svg';
+import prev from './prev.svg';
+import ResultByYear from './ResultByYear.svg';
+
+import EditNotify from './EditNotify.svg';
 
 export {
   trash,
@@ -69,5 +75,9 @@ export {
   star,
   searchResult,
   filterSlider,
-  CloseSlider
+  CloseSlider,
+  next,
+  prev,
+  ResultByYear,
+  EditNotify
 }

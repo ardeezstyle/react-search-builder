@@ -5,6 +5,7 @@ import * as Images from '../assets/images';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
 import Builder from '../Builder/Builder';
+import SearchResult from '../SearchResult/SearchResult';
 
 class Wrapper extends React.Component<any, any>  {
     state = {
@@ -117,7 +118,7 @@ class Wrapper extends React.Component<any, any>  {
                             </div>
                             <div className="TabContent">
                                 {this.state.showSearchResult ?
-                                    <img className="search-result" src={Images.searchResult} title="" alt="" />
+                                    <SearchResult/>
                                     :
                                     <Builder onReceivedSearch={(data: any) => this.onSearch(data)} />
                                 }

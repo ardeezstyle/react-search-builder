@@ -42,7 +42,7 @@ class FilterSlider extends React.Component<any, any>  {
                                 <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                         </ul>
                         <div className={SliderCSS.Heading}>Article Type</div>
-                        <ul className={SliderCSS.List + " " + SliderCSS.ThreeColumns}>
+                        <ul className={SliderCSS.List + " " + SliderCSS.TwoColumns}>
                             {articleTypes.map((db: any, idx: number) =>
                                 <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                         </ul>

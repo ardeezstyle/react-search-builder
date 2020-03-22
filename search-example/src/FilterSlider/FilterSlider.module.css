@@ -103,7 +103,7 @@
     transform: rotate(-50deg);
     position: absolute;
     left: 4px;
-    bottom: 8px;
+    bottom: 6px;
 }
 
 
@@ -140,5 +140,5 @@
     transform: rotate(-50deg);
     position: absolute;
     left: 6px;
-    bottom: 6px;
+    bottom: 5px;
 }
