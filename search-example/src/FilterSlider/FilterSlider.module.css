@@ -1,0 +1,144 @@
+.Slider,
+.SliderOpen {
+  position: fixed;
+  top: 0;
+  border: 0;
+  bottom: 0;
+  width: 500px;
+  background: #fff;
+  z-index: 1000;
+  box-shadow: 0 0 15px #7B7A7A;
+  right: -500px;
+  transition-delay: 1s;
+  transition: right 400ms ease-in-out;
+}
+
+.SliderOpen {
+  right: 0;
+}
+
+.Header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #CACBCB;
+}
+.Header > span {
+    font-size: 20px;
+}
+.Header > img {
+    cursor: pointer;
+}
+.Body {
+    padding: 20px;
+    height: calc(100vh - 70px);
+    overflow: auto;
+}
+.Heading {
+    text-transform: uppercase;
+    color: #757575;
+    font-size: 16px;
+}
+.List {
+    list-style: none;
+    margin: 10px 0 30px;
+    padding: 0 10px;
+}
+.TwoColumns {
+    display: flex;
+    flex-wrap: wrap;
+}
+.TwoColumns li {
+    min-width: 50%;
+    padding-right: 10px;
+}
+.ThreeColumns {
+    display: flex;
+    flex-wrap: wrap;
+}
+.ThreeColumns li {
+    min-width: 33.3%;
+    padding-right: 10px;
+}
+
+.List input[type="checkbox"],
+.List input[type="radio"] {
+    display: none;
+}
+
+.List li {
+    margin: 10px 0;
+}
+
+.List input[type="checkbox"] + span {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    padding-left: 28px;
+}
+
+.List input[type="checkbox"] + span:before {
+    content: '';
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #4C9E87;
+    margin-right: 10px;
+    border-radius: 2px;
+    position: absolute;
+    left: 0;
+}
+
+.List input[type="checkbox"]:checked + span:before {
+    background: #4C9E87;
+}
+
+.List input[type="checkbox"]:checked + span:after {
+    content: '';
+    width: 8px;
+    height: 4px;
+    border-bottom: 1px solid #FFF;
+    border-left: 1px solid #FFF;
+    transform: rotate(-50deg);
+    position: absolute;
+    left: 4px;
+    bottom: 8px;
+}
+
+
+.List input[type="radio"] + span {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    padding-left: 28px;
+}
+
+.List input[type="radio"] + span:before {
+    content: '';
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #4C9E87;
+    margin-right: 10px;
+    border-radius: 10px;
+    position: absolute;
+    left: 0;
+}
+
+.List input[type="radio"]:checked + span:before {
+    background: #4C9E87;
+}
+
+.List input[type="radio"]:checked + span:after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 4px;
+    background: #FFF;
+    transform: rotate(-50deg);
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+}

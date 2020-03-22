@@ -36,6 +36,8 @@ import star from './Star.svg';
 
 import filterSlider from './filterSlider.png';
 
+import CloseSlider from './CloseSlider.svg';
+
 export {
   trash,
   dots,
@@ -66,5 +68,6 @@ export {
   circleTick,
   star,
   searchResult,
-  filterSlider
+  filterSlider,
+  CloseSlider
 }
