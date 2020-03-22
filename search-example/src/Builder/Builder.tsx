@@ -27,6 +27,7 @@ interface ICondition {
 interface IState {
     conditions: ICondition[];
     expression?: string;
+    excludeExpression?: string;
     valid: boolean;
     showAdvance?: boolean;
     conds?: any[];
@@ -41,6 +42,7 @@ class Builder extends React.Component<any, IState> {
     state: IState = {
         conditions: [{ id: 1, operand: [] }],
         expression: '',
+        excludeExpression: '',
         valid: true,
         showAdvance: true,
         conds: [],
@@ -57,6 +59,8 @@ class Builder extends React.Component<any, IState> {
                 ...this.state,
                 conditions: sbstateObj.conditions,
                 excludeConditions: sbstateObj.exclude
+            }, () => {
+                this.updateExpression();
             });
         }
     }
@@ -127,8 +131,9 @@ class Builder extends React.Component<any, IState> {
         this.setState({
             ...this.state,
             conditions: updatedConditions
-        })
-        this.updateExpression();
+        }, () => {
+            this.updateExpression();
+        });
     }
 
     getOperator(c: any) {
@@ -185,8 +190,29 @@ class Builder extends React.Component<any, IState> {
         this.setState({
             ...this.state,
             conditions: updatedConditions
-        })
-        this.updateExpression();
+        }, () => {
+            this.updateExpression();
+        });
+    }
+
+    removeSingleExcludeCondition = (id: any) => {
+        console.log(id);
+        let updatedConditions:any = [];
+        if(this.state.excludeConditions && this.state.excludeConditions.length > 0) {
+            updatedConditions = [...this.state.excludeConditions];
+
+            updatedConditions.splice(id, 1);
+            if (updatedConditions.length > 0) {
+                delete updatedConditions[0].operator;
+            }
+
+            this.setState({
+                ...this.state,
+                excludeConditions: updatedConditions
+            }, () => {
+                this.updateExpression();
+            });
+        }
     }
 
     handleSuggestion = (data: any, id: number) => {
@@ -207,8 +233,10 @@ class Builder extends React.Component<any, IState> {
         this.setState({
             ...this.state,
             conditions: updatedConditions
-        })
-        this.updateExpression();
+        }, () => {
+            this.updateExpression();
+        });
+
     }
 
     handleExcludeSuggestion = (data: any) => {
@@ -229,7 +257,10 @@ class Builder extends React.Component<any, IState> {
         }
 
         const updatedState = { ...prevState, excludeConditions: [...prevState.excludeConditions, condition] };
-        this.setState(updatedState);
+        this.setState(updatedState, () => {
+            this.updateExpression();
+        });
+
     }
 
 
@@ -257,14 +288,31 @@ class Builder extends React.Component<any, IState> {
         return this.getConditionString(this.state.conditions);
     }
 
+    extractExcludeConditionString = () => {
+        if(this.state.excludeConditions && this.state.excludeConditions.length > 0) {
+            return this.getConditionString(this.state.excludeConditions);
+        } else {
+            return "";
+        }
+    }
+
     onExpressionChanged = (e: any) => {
         this.setState({ ...this.state, expression: e.target.value, valid: true });
     }
 
     updateExpression = () => {
         const updatedExpression: any = this.extractConditionString();
-        const updatedState = { ...this.state, expression: updatedExpression };
-        this.setState(updatedState);
+        const updatedExcludeExpression: any = this.extractExcludeConditionString();
+        const prevState = { ...this.state };
+
+        if (updatedExpression !== '') {
+            if (updatedExcludeExpression !== '') {
+                prevState.expression = updatedExpression + "NOT (" + updatedExcludeExpression + ")"
+            } else {
+                prevState.expression = updatedExpression;
+            }
+        }
+        this.setState(prevState);
     }
 
     updateCondition = () => {
@@ -392,13 +440,7 @@ class Builder extends React.Component<any, IState> {
             // console.log(prevState);
             const updatedState = { ...prevState, conds: [...prevState.conds, condition] }
 
-            //updatedConditions = [...this.state.conds, condition];
-            // updatedConditions = [...updatedConditions, {operand: }];
-
-            // updatedConditions = [...conditions, condition, ...this.formCObject(newStr, updatedConditions, operator)];
-            // console.log(updatedConditions);
             console.log('updatedConditions =>', updatedConditions, updatedState);
-            // this.setState(updatedState);
             this.formCObject(newStr, operator);
         }
     }
@@ -418,9 +460,6 @@ class Builder extends React.Component<any, IState> {
         let obj = this.extractCObject(str);
         console.log(obj);
     }
-
-
-
 
     handleSwitch = () => {
         this.setState({
@@ -468,7 +507,7 @@ class Builder extends React.Component<any, IState> {
     getExcludeConditionOperator(cn: any, idx: number) {
         if (cn.operator) {
             return <div className="operator">
-                <select value={cn.operator}>
+                <select defaultValue={cn.operator}>
                     <option value="OR">OR</option>
                 </select>
             </div>
@@ -489,8 +528,9 @@ class Builder extends React.Component<any, IState> {
                                 {this.allFieldOptions()}
                             </div>
                             <div>
-                                <div onClick={() => this.removeSingleCondition(cn.id, idx)}><img className="small-icon" src={Images.close} alt="close" /></div>
-                                <div><img className="small-icon" src={Images.bookmark} alt="bookmark" /></div>
+                                <div style={{cursor: "pointer"}}
+                                    onClick={() => this.removeSingleExcludeCondition(idx)}>
+                                    <img className="small-icon" src={Images.close} alt="close" /></div>
                             </div>
                         </div>
                     </div>
