@@ -6,7 +6,7 @@ import * as Images from '../assets/images';
 import Slider from '../Slider/Slider';
 import FilterSlider from '../FilterSlider/FilterSlider';
 
-const DATA: any = [
+const DATA = [
     "Johnson and johnson",
     "GTemp",
     "Influenza Vaccines",
@@ -28,31 +28,31 @@ const DATA: any = [
     "Virus Infection"
 ];
 
-interface ICondition {
-    id: number;
-    operator?: string;
-    operand: ICondition[];
-    focus?: boolean;
-    bookmarked?: boolean;
-}
-
-interface IState {
-    conditions: ICondition[];
-    tempconditions: ICondition[];
-    excludeConditions?: any[];
-    excludeControlFocus?: any;
-    showSlider?: boolean;
-    showFilterSlider?: boolean;
-    valid: boolean;
-    showAdvance?: boolean;
-    expression?: string;
-
-    // excludeExpression?: string;
-
-    conds?: any[];
-    cnds?: any[];
-    cnds_last?: any[];
-}
+// interface ICondition {
+//     id: number;
+//     operator?: string;
+//     operand: ICondition[];
+//     focus?: boolean;
+//     bookmarked?: boolean;
+// }
+//
+// interface IState {
+//     conditions: ICondition[];
+//     tempconditions: ICondition[];
+//     excludeConditions?: any[];
+//     excludeControlFocus?: any;
+//     showSlider?: boolean;
+//     showFilterSlider?: boolean;
+//     valid: boolean;
+//     showAdvance?: boolean;
+//     expression?: string;
+//
+//     // excludeExpression?: string;
+//
+//     conds?: any[];
+//     cnds?: any[];
+//     cnds_last?: any[];
+// }
 
 const initialState = {
     conditions: [{ id: 1, operand: [] }],
@@ -70,14 +70,14 @@ const initialState = {
     cnds_last: []
 };
 
-class Builder extends React.Component<any, IState> {
+class Builder extends React.Component {
 
-    state: IState = initialState;
+    state = initialState;
     operatorsRegex = /\bAND\b|\bOR\b|\bNOT\b/g;
     parenthesisRegex = /\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g;
 
     componentDidMount() {
-        const sbstate: any = localStorage.getItem('sbstate');
+        const sbstate = localStorage.getItem('sbstate');
         if (sbstate) {
             const sbstateObj = JSON.parse(sbstate);
             this.setState({
@@ -90,7 +90,7 @@ class Builder extends React.Component<any, IState> {
         }
     }
 
-    getIdx = (id: any) => {
+    getIdx = (id) => {
         return this.state.conditions.findIndex(c => c.id === id);
     }
 
@@ -100,17 +100,17 @@ class Builder extends React.Component<any, IState> {
         return lastId + 1;
     }
 
-    isLastElement = (c: any) => {
+    isLastElement = (c) => {
         if (this.state.conditions.length === this.getIdx(c.id) + 1) return true;
         return false;
     }
 
-    isFirstElement = (c: any) => {
+    isFirstElement = (c) => {
         if (this.getIdx(c.id) === 0) return true;
         return false;
     }
 
-    removeConditionHandler = (id: any) => {
+    removeConditionHandler = (id) => {
         const idx = this.getIdx(id);
         const updatedConditions = [...this.state.conditions];
         if (updatedConditions.length > 1) {
@@ -136,7 +136,7 @@ class Builder extends React.Component<any, IState> {
         })
     }
 
-    handleOperatorChange = (e: any, id: any) => {
+    handleOperatorChange = (e, id) => {
         const idx = this.getIdx(id);
         const updatedCondition = { ...this.state.conditions[idx], operator: e.target.value };
         const updatedConditions = [...this.state.conditions];
@@ -147,7 +147,7 @@ class Builder extends React.Component<any, IState> {
         })
     }
 
-    handleConditionOperatorChange = (e: any, id: any, cIdx: any) => {
+    handleConditionOperatorChange = (e, id, cIdx) => {
         const idx = this.getIdx(id);
         const updatedConditionOperator = { ...this.state.conditions[idx].operand[cIdx], operator: e.target.value };
         const updatedConditions = [...this.state.conditions];
@@ -161,7 +161,7 @@ class Builder extends React.Component<any, IState> {
         });
     }
 
-    getOperator(c: any) {
+    getOperator(c) {
         if (c.operator) {
             return <div className="operator-top-level">
                 <select value={c.operator} onChange={(event) => this.handleOperatorChange(event, c.id)}>
@@ -175,7 +175,7 @@ class Builder extends React.Component<any, IState> {
         else return null
     }
 
-    getConditionOperator(c: any, cIndex: any, idx: any) {
+    getConditionOperator(c, cIndex, idx) {
         if (c.operator) {
             return <div className="operator">
                 <select value={c.operator} onChange={(event) => this.handleConditionOperatorChange(event, cIndex, idx)}>
@@ -201,7 +201,7 @@ class Builder extends React.Component<any, IState> {
         </div>
     }
 
-    removeSingleCondition = (cIndex: any, id: any) => {
+    removeSingleCondition = (cIndex, id) => {
         const idx = this.getIdx(cIndex);
         const updatedConditions = [...this.state.conditions];
         const conditions = updatedConditions[idx].operand;
@@ -219,9 +219,9 @@ class Builder extends React.Component<any, IState> {
         });
     }
 
-    removeSingleExcludeCondition = (id: any) => {
+    removeSingleExcludeCondition = (id) => {
         console.log(id);
-        let updatedConditions:any = [];
+        let updatedConditions = [];
         if(this.state.excludeConditions && this.state.excludeConditions.length > 0) {
             updatedConditions = [...this.state.excludeConditions];
 
@@ -239,9 +239,9 @@ class Builder extends React.Component<any, IState> {
         }
     }
 
-    handleSuggestion = (data: any, id: number) => {
+    handleSuggestion = (data, id) => {
         const idx = this.getIdx(id);
-        let condition: any = {
+        let condition = {
             operand: data
         }
 
@@ -263,11 +263,11 @@ class Builder extends React.Component<any, IState> {
 
     }
 
-    handleExcludeSuggestion = (data: any) => {
+    handleExcludeSuggestion = (data) => {
         console.log(data);
-        const prevState: any = { ...this.state };
+        const prevState = { ...this.state };
 
-        let condition: any = {
+        let condition = {
             operand: data
         }
 
@@ -289,7 +289,7 @@ class Builder extends React.Component<any, IState> {
 
 
     // Search expression
-    getConditionString = (conditions: ICondition[]) => {
+    getConditionString = (conditions) => {
         let condString = '';
         conditions.map((condition) => {
             if (Object.keys(condition).length > 0) {
@@ -321,8 +321,8 @@ class Builder extends React.Component<any, IState> {
     }
 
     updateExpression = () => {
-        const updatedExpression: any = this.extractConditionString();
-        const updatedExcludeExpression: any = this.extractExcludeConditionString();
+        const updatedExpression = this.extractConditionString();
+        const updatedExcludeExpression = this.extractExcludeConditionString();
         const prevState = { ...this.state };
 
         if (updatedExpression !== '') {
@@ -352,7 +352,7 @@ class Builder extends React.Component<any, IState> {
         this.props.onReceivedSearch({ show: true, result: {} });
     }
 
-    handleSlider = (cn: any, id: any) => {
+    handleSlider = (cn, id) => {
         this.setState({
             ...this.state,
             showSlider: true
@@ -366,11 +366,11 @@ class Builder extends React.Component<any, IState> {
         });
     }
 
-    getExcludeConditionOperator(cn: any, idx: number) {
+    getExcludeConditionOperator(cn, idx) {
         if (cn.operator) {
             return <div className="operator">
                 <select defaultValue={cn.operator}>
-                    <option value="OR">OR</option>
+                    <option value="AND">AND</option>
                 </select>
             </div>
         }
@@ -378,9 +378,9 @@ class Builder extends React.Component<any, IState> {
     }
 
     handleExcludeConditions() {
-        const excludeConditions: any = this.state.excludeConditions;
+        const excludeConditions = this.state.excludeConditions;
         if (excludeConditions && excludeConditions.length > 0) {
-            return excludeConditions.map((cn: any, idx: any) =>
+            return excludeConditions.map((cn, idx) =>
                 <React.Fragment key={Math.random()}>
                     {this.getExcludeConditionOperator(cn, idx)}
                     <div className="condition-wrapper">
@@ -403,14 +403,14 @@ class Builder extends React.Component<any, IState> {
         }
     }
 
-    handleControlFocus = (bool: boolean = false, id: number) => {
+    handleControlFocus = (bool = false, id) => {
         const idx = this.getIdx(id);
-        const prevState: any = { ...this.state };
+        const prevState = { ...this.state };
         prevState.conditions[idx].focus = bool;
         this.setState(prevState);
     }
 
-    handleExcludeControlFocus = (bool: boolean = false) => {
+    handleExcludeControlFocus = (bool = false) => {
         this.setState({ ...this.state, excludeControlFocus: bool });
     }
 
@@ -421,28 +421,31 @@ class Builder extends React.Component<any, IState> {
         this.setState({ ...this.state, showFilterSlider: false });
     }
 
-    handleBookmark = (cn: any, id: number, cIdx: number) => {
+    handleBookmark = (cn, id, cIdx) => {
         const idx = this.getIdx(id);
         const prevState = { ...this.state };
         prevState.conditions[idx].operand[cIdx] = { ...prevState.conditions[idx].operand[cIdx], bookmarked: !prevState.conditions[idx].operand[cIdx].bookmarked };
         this.setState(prevState);
     }
 
-
-
-
     /*
         Code below is for Expression to builder conversion on update
         ----- start -----
     */
 
-    onExpressionChanged = (e: any) => {
+    onExpressionChanged = (e) => {
         this.setState({ ...this.state, expression: e.target.value, valid: true });
     }
 
-    flatenArray = (arr: any, idx: any, operator: string): any => {
+    handleUpdateCondition = (e)  => {
+        if(e.keyCode === 13) {
+            this.updateCondition();
+        }
+    }
+
+    flatenArray = (arr, idx, operator) => {
         if(arr && arr.length > 0) {
-            arr.map((o: any) => {
+            arr.map((o) => {
                 return this.flatenArray(o, idx, operator);
             })
         } else if(typeof arr.operand === 'object') {
@@ -478,7 +481,7 @@ class Builder extends React.Component<any, IState> {
                         return true;
                     })
                 } else {
-                    this.setState((oldState: any) => {
+                    this.setState((oldState) => {
                         return {...oldState, tempconditions: [{id: 1, operand: this.state.conds, focus: false}]};
                     })
                 }
@@ -503,10 +506,10 @@ class Builder extends React.Component<any, IState> {
     }
 
 //("Test" AND "OK") OR ("Invalid") AND ("Test" AND "OK") OR ("Invalid")
-    getConditionObject = (str: string, o: string = '') => {
-        let condition: any;
+    getConditionObject = (str, o = '') => {
+        let condition;
         let regex = /\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g;
-        const result: any = regex.exec(str);
+        const result = regex.exec(str);
         let operator, operand, newStr;
 
         if (result !== null) {
@@ -528,32 +531,30 @@ class Builder extends React.Component<any, IState> {
             setTimeout(() => {
                 const cnds_last = this.state.cnds && [...this.state.cnds];
                 this.setState({ ...this.state, cnds_last: cnds_last});
-                this.state.cnds && this.state.cnds.map((c: any, idx: number) => {
+                this.state.cnds && this.state.cnds.map((c, idx) => {
                     this.extractCO(this.cleanQuotes(c.operand), idx);
                     return true;
                 });
-                this.setState((oldState: any) => {
+                this.setState((oldState) => {
                     const cnds_last = oldState.cnds_last && [...oldState.cnds_last];
-                    const conditions: any = cnds_last.filter((c:any) => c.operator !== 'NOT');
-                    const excludeConditionsArray: any = cnds_last.filter((c:any) => c.operator === 'NOT');
-                    const excludeConditions: any = [];
-                    excludeConditionsArray.map((ec: any) => {
+                    const conditions = cnds_last.filter((c) => c.operator !== 'NOT');
+                    const excludeConditionsArray = cnds_last.filter((c) => c.operator === 'NOT');
+                    const excludeConditions = [];
+                    excludeConditionsArray.map((ec) => {
                         excludeConditions.push(...ec.operand);
                         return true;
                     });
-                    excludeConditions.map((ec: any, idx: number) => ec.operator = idx !== 0 ?  'AND' : '');
+                    excludeConditions.map((ec, idx) => ec.operator = idx !== 0 ?  'AND' : '');
                     return { ...oldState, valid: true, conditions: conditions, excludeConditions: excludeConditions};
                 })
             }, 1);
         }
     }
-// ("Test" AND "OK") OR ("Invalid") AND ("Test123" AND "OK1") NOT ("Invalid3") AND ("Test432" AND "OK1") NOT ("Invalid4")
-//("Test" AND "OK") OR ("Invalid") AND ("Test" AND "OK") OR ("Invalid")
-    extractCO = (str: string, idx: number, o: string = '') => {
+    extractCO = (str, idx, o = '') => {
         const regex = /\bAND\b|\bOR\b|\bNOT\b/g;
-        let condition: any;
+        let condition;
 
-        const result: any = regex.exec(str);
+        const result = regex.exec(str);
         let operator, operand, newStr;
         if (result !== null) {
             operator = result[0];
@@ -591,19 +592,18 @@ class Builder extends React.Component<any, IState> {
         }
     }
 
-    cleanQuotes(str: string) {
+    cleanQuotes(str) {
         const s = str.trim()
         const len = s.length;
         return s.substring(1, len - 1);
     }
 
-    formCObject = (str: string, o: string = '') => {
+    formCObject = (str, o = '') => {
         const regex = /\bAND\b|\bOR\b|\bNOT\b/g;
-        let condition: any;
+        let condition;
 
-        const result: any = regex.exec(str);
+        const result = regex.exec(str);
         let operator, operand, newStr;
-console.log(result);
         if (result !== null) {
             operator = result[0];
             newStr = str.substring(result['index'] + operator.length).trim();
@@ -628,11 +628,10 @@ console.log(result);
         }
     }
 
-    extractCObject = (str: string = '') => {
+    extractCObject = (str = '') => {
         const regex = /\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g;
         try{
             if (regex.exec(str) === null) { // When there is not parenthesis
-                console.log('str', str);
                 this.formCObject(str);
             } else { // When there is parenthesis
                 this.getConditionObject(str);
@@ -640,7 +639,6 @@ console.log(result);
         } catch(error) {
             console.log('Error', error);
         }
-
     }
 
 
@@ -653,7 +651,7 @@ console.log(result);
 
 
 
-    public render() {
+    render() {
         return (
             <div className="SearchComponent">
                 {this.state.showSlider ? <Slider status="open" closed={this.closeSlider} /> : <Slider status="close" />}
@@ -662,6 +660,7 @@ console.log(result);
                     className={this.state.valid ? "editor" : "editor error"}
                     value={this.state.expression}
                     placeholder="Enter Text"
+                    onKeyUp={this.handleUpdateCondition}
                     onChange={this.onExpressionChanged} />
                 <div className="flexbox">
                     <div className="flexbox">
@@ -677,12 +676,12 @@ console.log(result);
                     <React.Fragment>
                         <div className="heading">Medical Terms</div>
                         <div className="condition-group">
-                            {this.state.conditions.map((c: any) => (
+                            {this.state.conditions.map((c) => (
                                 <div key={c.id} className="row-wrapper">
                                     {this.getOperator(c)}
                                     <div className="row">
                                         <div className={c.focus ? "conditions focus" : "conditions"}>
-                                            {c.operand.map((cn: any, idx: any) => (
+                                            {c.operand.map((cn, idx) => (
                                                 <React.Fragment key={Math.random()}>
                                                     {this.getConditionOperator(cn, c.id, idx)}
                                                     <div className="condition-wrapper">
@@ -703,8 +702,8 @@ console.log(result);
                                             ))}
                                             <Autosuggest
                                                 data={DATA}
-                                                onFocus={(data: any) => this.handleControlFocus(data, c.id)}
-                                                onReceived={(data: string) => this.handleSuggestion(data, c.id)} />
+                                                onFocus={(data) => this.handleControlFocus(data, c.id)}
+                                                onReceived={(data) => this.handleSuggestion(data, c.id)} />
                                         </div>
                                         {this.isLastElement(c) ? this.isFirstElement(c) ? <button className="button-add" onClick={this.addConditionHandler}><img src={Images.add} alt="add" /></button> : <React.Fragment>
                                             <button className="button-remove" onClick={() => this.removeConditionHandler(c.id)}><img src={Images.remove} alt="remove" /></button>
@@ -720,8 +719,8 @@ console.log(result);
                             {this.handleExcludeConditions()}
                             <Autosuggest
                                 data={DATA}
-                                onFocus={(data: any) => this.handleExcludeControlFocus(data)}
-                                onReceived={(data: string) => this.handleExcludeSuggestion(data)} />
+                                onFocus={(data) => this.handleExcludeControlFocus(data)}
+                                onReceived={(data) => this.handleExcludeSuggestion(data)} />
                         </div>
                         <div className="Actions" style={{display: 'flex', alignItems: 'center'}}>
                             <button className="secondary" onClick={this.handleFilterSlider}>Add Filters</button>

@@ -9,9 +9,9 @@ const articleTypes = ["Books and Documents", "Clinical Trial", "Meta-Analysis", 
 const age = [ "Child: birth-18 years", "Newborn: birth-1 month",  "Infant: birth-23 months",
 "Infant: 1-23 months", "Preschool Child: 2-5 years", "Child: 6-12 years", "Adolescent: 13-18 years"];
 
-class SearchResult extends React.Component<any, any>  {
+class SearchResult extends React.Component  {
 
-  public render() {
+  render() {
     return (
         <div>
             <div className={SearchResultCSS.Top}>
@@ -63,27 +63,27 @@ class SearchResult extends React.Component<any, any>  {
 
                         <div className={SearchResultCSS.Heading}>Publication date</div>
                         <ul className={SearchResultCSS.List}>
-                            {publicationDates.map((db: any, idx: number) =>
+                            {publicationDates.map((db, idx) =>
                                 <li key={idx}><label><input type="radio" name="pubdate" value={db} /><span>{db}</span></label></li>)}
                         </ul>
                         <div className={SearchResultCSS.Heading}>Species</div>
                         <ul className={SearchResultCSS.List}>
-                            {species.map((db: any, idx: number) =>
+                            {species.map((db, idx) =>
                                 <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                         </ul>
                         <div className={SearchResultCSS.Heading}>Gender</div>
                         <ul className={SearchResultCSS.List}>
-                            {gender.map((db: any, idx: number) =>
+                            {gender.map((db, idx) =>
                                 <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                         </ul>
                         <div className={SearchResultCSS.Heading}>Article Type</div>
                         <ul className={SearchResultCSS.List}>
-                            {articleTypes.map((db: any, idx: number) =>
+                            {articleTypes.map((db, idx) =>
                                 <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                         </ul>
                         <div className={SearchResultCSS.Heading}>Age</div>
                         <ul className={SearchResultCSS.List}>
-                            {age.map((db: any, idx: number) =>
+                            {age.map((db, idx) =>
                                 <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                         </ul>
                     </div>

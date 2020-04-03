@@ -13,11 +13,11 @@ const articleTypes = ["Address", "Autobiography", "Bibliography", "Biography", "
     "English Abstract", "Evaluation Study", "Festschrift", "Government Document", "Guideline", "Historical Article", "Interactive Tutorial",
     "Interview", "Introductory Journal Article", "Journal Article", "Lecture"];
 
-class FilterSlider extends React.Component<any, any>  {
+class FilterSlider extends React.Component  {
     onClose = () => {
         this.props.closed();
     }
-    public render() {
+    render() {
         return (
             <div className={this.props.status === 'open' ? SliderCSS.SliderOpen : SliderCSS.Slider}>
                 <div className={SliderCSS.Header}>
@@ -28,22 +28,22 @@ class FilterSlider extends React.Component<any, any>  {
                     <div>
                         <div className={SliderCSS.Heading}>Database</div>
                         <ul className={SliderCSS.List}>
-                            {database.map((db: any, idx: number) =>
+                            {database.map((db, idx) =>
                                 <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                         </ul>
                         <div className={SliderCSS.Heading}>Time Duration</div>
                         <ul className={SliderCSS.List}>
-                            {timeduration.map((db: any, idx: number) =>
+                            {timeduration.map((db, idx) =>
                                 <li key={idx}><label><input type="radio" value={db} name="duration" /><span>{db}</span></label></li>)}
                         </ul>
                         <div className={SliderCSS.Heading}>Other Terms</div>
                         <ul className={SliderCSS.List}>
-                            {otherterms.map((db: any, idx: number) =>
+                            {otherterms.map((db, idx) =>
                                 <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                         </ul>
                         <div className={SliderCSS.Heading}>Article Type</div>
                         <ul className={SliderCSS.List + " " + SliderCSS.TwoColumns}>
-                            {articleTypes.map((db: any, idx: number) =>
+                            {articleTypes.map((db, idx) =>
                                 <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                         </ul>
 

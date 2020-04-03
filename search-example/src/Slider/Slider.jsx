@@ -11,12 +11,12 @@ const categories = ["analysis", "anatomy and histology", "blood", "cerebrospinal
 ];
 
 
-class Slider extends React.Component<any, any>  {
+class Slider extends React.Component  {
   onClose = () => {
     this.props.closed();
   }
 
-  public render() {
+  render() {
     return (
         <div className={this.props.status === 'open' ? SliderCSS.SliderOpen : SliderCSS.Slider}>
             <div className={SliderCSS.Header}>
@@ -36,7 +36,7 @@ class Slider extends React.Component<any, any>  {
                 <div>
                     <div className={SliderCSS.Heading}>Categories</div>
                     <ul className={SliderCSS.List + " " + SliderCSS.ThreeColumns}>
-                        {categories.map((db: any, idx: number) =>
+                        {categories.map((db, idx) =>
                             <li key={idx}><label><input type="checkbox" value={db} /><span>{db}</span></label></li>)}
                     </ul>
                 </div>

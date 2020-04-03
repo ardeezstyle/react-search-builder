@@ -2,9 +2,9 @@ import * as React from 'react';
 import './Sidebar.css';
 import * as Images from '../assets/images';
 
-class Sidebar extends React.Component<any, any>  {
+class Sidebar extends React.Component  {
 
-  public render() {
+  render() {
     return (
       <div className="Sidebar">
         <div className="TopPanel">

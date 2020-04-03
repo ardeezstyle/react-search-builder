@@ -7,7 +7,7 @@ import Header from '../Header/Header';
 import Builder from '../Builder/Builder';
 import SearchResult from '../SearchResult/SearchResult';
 
-class Wrapper extends React.Component<any, any>  {
+class Wrapper extends React.Component  {
     state = {
         showSearchResult: false,
         results: [],
@@ -17,7 +17,7 @@ class Wrapper extends React.Component<any, any>  {
     componentDidMount() {
         localStorage.removeItem('sbstate');
     }
-    onSearch = (data: any) => {
+    onSearch = data => {
         const results = [...this.state.results, data.result];
 
         console.log(results);
@@ -36,13 +36,13 @@ class Wrapper extends React.Component<any, any>  {
             activeTab: -1
         });
     }
-    handleResultTab = (id: number) => {
+    handleResultTab = id => {
         if (this.state.results.length > 0) {
             this.setState({ ...this.state, showSearchResult: true, activeTab: id });
         }
     }
 
-    getJSXElements = (res: any) => {
+    getJSXElements = res => {
         return {
             results: res.new ? <span><b>{res.new}</b> of <b>{res.total}</b> Results</span> : <span><b>{res.total}</b> Results</span>,
             counts: res.search ?
@@ -60,7 +60,7 @@ class Wrapper extends React.Component<any, any>  {
         }
     }
 
-    removeSearchTab = (idx: number, e: any) => {
+    removeSearchTab = (idx, e) => {
         const results = [...this.state.results];
         results.splice(idx, 1);
         this.setState({
@@ -73,9 +73,9 @@ class Wrapper extends React.Component<any, any>  {
     }
 
     extractResultTabs = () => {
-        const curState: any = { ...this.state };
+        const curState = { ...this.state };
 
-        return curState.results.map((res: any, idx: number) =>
+        return curState.results.map((res, idx) =>
             <div key={idx} className={curState.activeTab === idx ? "Tab nopad Active" : "Tab nopad"} onClick={() => this.handleResultTab(idx)}>
                 <div className="search-tab">
                     <div><img src={Images.star} title="" alt=""></img></div>
@@ -83,13 +83,13 @@ class Wrapper extends React.Component<any, any>  {
                         <div>{this.getJSXElements(res).results}</div>
                         {this.getJSXElements(res).counts}
                     </div>
-                    <div style={{ cursor: 'pointer' }} onClick={(e:any) => this.removeSearchTab(idx, e)}><img src={Images.BlueClose} title="" alt=""></img></div>
+                    <div style={{ cursor: 'pointer' }} onClick={(e) => this.removeSearchTab(idx, e)}><img src={Images.BlueClose} title="" alt=""></img></div>
                 </div>
             </div>
         );
     }
 
-    public render() {
+    render() {
         return (
             <div className="Wrapper">
                 <Sidebar />
@@ -120,7 +120,7 @@ class Wrapper extends React.Component<any, any>  {
                                 {this.state.showSearchResult ?
                                     <SearchResult/>
                                     :
-                                    <Builder onReceivedSearch={(data: any) => this.onSearch(data)} />
+                                    <Builder onReceivedSearch={(data) => this.onSearch(data)} />
                                 }
                             </div>
                         </div>

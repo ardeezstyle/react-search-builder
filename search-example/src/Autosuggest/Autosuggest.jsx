@@ -1,8 +1,8 @@
 import * as React from 'react';
 import './Autosuggest.css';
 
-class Autosuggest extends React.Component<any, any>  {
-    ref: any;
+class Autosuggest extends React.Component  {
+    ref;
     state = {
         value: '',
         suggestions: [],
@@ -10,17 +10,17 @@ class Autosuggest extends React.Component<any, any>  {
         control: null
     }
 
-    constructor(props: any) {
+    constructor(props) {
         super(props);
         this.ref = React.createRef();
     }
 
-    onChange = (e: any) => {
+    onChange = (e) => {
         this.setState({ value: e.target.value, control: e.target });
     }
 
-    onKeyUp = (e: any) => {
-        const suggestions = this.props.data.filter((item: string) => item.toLowerCase().indexOf(this.state.value.toLowerCase()) > -1);
+    onKeyUp = (e) => {
+        const suggestions = this.props.data.filter((item) => item.toLowerCase().indexOf(this.state.value.toLowerCase()) > -1);
         const key = e.keyCode;
 
         let suggestionsToBeShown = suggestions;
@@ -34,7 +34,7 @@ class Autosuggest extends React.Component<any, any>  {
         });
     }
 
-    onKeyDown = (e: any) => {
+    onKeyDown = (e) => {
         if (e.keyCode === 9 || e.keyCode === 13) {
             if (this.state.value !== '') {
                 this.doPassInfo();
@@ -44,7 +44,7 @@ class Autosuggest extends React.Component<any, any>  {
         }
     }
 
-    doPassInfo = (e?: any) => {
+    doPassInfo = (e) => {
         let value = this.state.value;
         if (e) {
             value = e.target.textContent;
@@ -62,7 +62,7 @@ class Autosuggest extends React.Component<any, any>  {
     setFocusOnControl = () => {
         if (this.state.control != null) {
             window.setTimeout(() => {
-                const control: any = this.state.control;
+                const control = this.state.control;
                 control.focus();
             }, 0);
         }
@@ -75,7 +75,7 @@ class Autosuggest extends React.Component<any, any>  {
         this.props.onFocus(false);
     }
 
-    check = (e: any) => {
+    check = (e) => {
         console.log(e.keyCode);
         if(e.keyCode === 13) {
             this.setState({ ...this.state, value: e.target.textContent}, () => {
@@ -101,7 +101,7 @@ class Autosuggest extends React.Component<any, any>  {
                     <li key={i} onClick={this.doPassInfo} onKeyUp={this.check} tabIndex={i}>{s}</li>) : null}
         </ul>
     }
-    public render() {
+    render() {
         return (
             <div className="auto-suggest-combo">
                 <input
