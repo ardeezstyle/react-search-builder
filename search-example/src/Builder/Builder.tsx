@@ -50,6 +50,8 @@ interface IState {
     // excludeExpression?: string;
 
     conds?: any[];
+    cnds?: any[];
+    cnds_last?: any[];
 }
 
 const initialState = {
@@ -63,12 +65,16 @@ const initialState = {
     showAdvance: true,
     expression: '',
 
-    conds: []
+    conds: [],
+    cnds: [],
+    cnds_last: []
 };
 
 class Builder extends React.Component<any, IState> {
 
     state: IState = initialState;
+    operatorsRegex = /\bAND\b|\bOR\b|\bNOT\b/g;
+    parenthesisRegex = /\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g;
 
     componentDidMount() {
         const sbstate: any = localStorage.getItem('sbstate');
@@ -360,18 +366,6 @@ class Builder extends React.Component<any, IState> {
         });
     }
 
-    handleExcludeConditionOperatorChange = (e: any, cIdx: any) => {
-        // const updatedConditionOperator = { ...this.state.conditions[idx].operand[cIdx], operator: e.target.value };
-        // const updatedConditions = [...this.state.conditions];
-        // updatedConditions[idx].operand[cIdx] = updatedConditionOperator;
-        //
-        // this.setState({
-        //   ...this.state,
-        //   conditions: updatedConditions
-        // })
-        // this.updateExpression();
-    }
-
     getExcludeConditionOperator(cn: any, idx: number) {
         if (cn.operator) {
             return <div className="operator">
@@ -473,7 +467,8 @@ class Builder extends React.Component<any, IState> {
     }
 
     updateCondition = () => {
-        this.setState({...this.state, conds: [], tempconditions: [] });
+
+        this.setState({...this.state, conds: [], tempconditions: [], cnds: [] });
 
         setTimeout(() => {
             try {
@@ -491,11 +486,9 @@ class Builder extends React.Component<any, IState> {
                 this.setState({...this.state, conditions: this.state.tempconditions});
 
             } catch(e) {
-                console.log("There is some problem!", e.message);
-                this.setState({...this.state, valid: false});
+                console.log("Looks like there are parenthesis in the expression", e.message);
+                // this.setState({...this.state, valid: false});
             }
-
-
         }, 1);
 
         if (this.state.expression !== '') {
@@ -509,89 +502,94 @@ class Builder extends React.Component<any, IState> {
 
     }
 
-    extractCO = (str: any, operator: any):any => {
-        const reg = /\bAND\b|\bOR\b|\bNOT\b/g;
-        const result: any = reg.exec(str);
-        let conditions = [];
+//("Test" AND "OK") OR ("Invalid") AND ("Test" AND "OK") OR ("Invalid")
+    getConditionObject = (str: string, o: string = '') => {
+        let condition: any;
+        let regex = /\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g;
+        const result: any = regex.exec(str);
+        let operator, operand, newStr;
+
         if (result !== null) {
-            const o = result[0];
-            const newStr = str.substring(result['index'] + operator.length).trim();
-            const operand = str.substring(0, result['index']).trim();
+            operand = result[0];
+            newStr = str.substring(result['index'] + operand.length).trim();
+            operator = newStr.slice().split(' ')[0];
 
-            conditions = this.extractCO(newStr, o);
-            if(operand){
-                if(operator) {
-                    conditions = [{operand: this.cleanQuotes(operand), operator: operator}, ...conditions];
-                } else {
-                    conditions = [{operand: this.cleanQuotes(operand)}, ...conditions];
-                }
+            if (o && o.length > 0) {
+                condition = { operand: operand, operator: o };
+            } else {
+                condition = { operand: operand };
             }
+            this.setState((oldState) => {
+                const cnds = oldState.cnds && oldState.cnds.length > 0 ? oldState.cnds : [] ;
+                return {...oldState, cnds: [...cnds, condition]};
+            });
+            this.getConditionObject(newStr, operator);
         } else {
-            conditions = [{operand: this.cleanQuotes(str), operator: operator}];
+            setTimeout(() => {
+                const cnds_last = this.state.cnds && [...this.state.cnds];
+                this.setState({ ...this.state, cnds_last: cnds_last});
+                this.state.cnds && this.state.cnds.map((c: any, idx: number) => {
+                    this.extractCO(this.cleanQuotes(c.operand), idx);
+                    return true;
+                });
+                this.setState((oldState: any) => {
+                    const cnds_last = oldState.cnds_last && [...oldState.cnds_last];
+                    const conditions: any = cnds_last.filter((c:any) => c.operator !== 'NOT');
+                    const excludeConditionsArray: any = cnds_last.filter((c:any) => c.operator === 'NOT');
+                    const excludeConditions: any = [];
+                    excludeConditionsArray.map((ec: any) => {
+                        excludeConditions.push(...ec.operand);
+                        return true;
+                    });
+                    excludeConditions.map((ec: any, idx: number) => ec.operator = idx !== 0 ?  'AND' : '');
+                    return { ...oldState, valid: true, conditions: conditions, excludeConditions: excludeConditions};
+                })
+            }, 1);
         }
-        return conditions;
     }
+// ("Test" AND "OK") OR ("Invalid") AND ("Test123" AND "OK1") NOT ("Invalid3") AND ("Test432" AND "OK1") NOT ("Invalid4")
+//("Test" AND "OK") OR ("Invalid") AND ("Test" AND "OK") OR ("Invalid")
+    extractCO = (str: string, idx: number, o: string = '') => {
+        const regex = /\bAND\b|\bOR\b|\bNOT\b/g;
+        let condition: any;
 
-    getConditionObject = (str: any) => {
-        const regex = /\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g;
-        let conditions: any[] = [];
-        let m;
+        const result: any = regex.exec(str);
+        let operator, operand, newStr;
+        if (result !== null) {
+            operator = result[0];
+            newStr = str.substring(result['index'] + operator.length).trim();
+            operand = str.substring(0, result['index']).trim();
 
-        let op: string = ''; // operator: op
-
-        while ((m = regex.exec(str)) !== null) {
-            // This is necessary to avoid infinite loops with zero-width matches
-            if (m.index === regex.lastIndex) {
-                regex.lastIndex++;
+            if (o && o.length > 0) {
+                condition = { operand: this.cleanQuotes(operand), operator: o };
+            } else {
+                condition = { operand: this.cleanQuotes(operand) };
             }
-
-            // The result can be accessed through the `m`-variable.
-            // eslint-disable-next-line
-            m.forEach((match) => {
-                let tempOperator = str.replace(match, '').trim().split(' ')[0];
-                if (tempOperator === 'AND' || tempOperator === 'OR' || tempOperator === 'NOT') {
-                    op = tempOperator;
-                }
-
-                const len = match.length;
-                let newStr = match.substring(1, len - 1);
-                if (conditions.length > 0) {
-                    conditions.push({ operator: op, operand: this.getConditionObject(newStr) });
+            this.setState((oldState) => {
+                const cnds_last = oldState.cnds_last ? [...oldState.cnds_last] : [];
+                cnds_last[idx].id = idx + 1;
+                if(typeof cnds_last[idx].operand === 'object') {
+                    cnds_last[idx].operand.push(condition);
                 } else {
-                    conditions.push({ operand: this.getConditionObject(newStr) });
+                    cnds_last[idx].operand = [condition];
                 }
-                return conditions;
+                return {...oldState, cnds_last: [...cnds_last]}
+            });
+            this.extractCO(newStr, idx, operator);
+        } else {
+            condition = { operand: this.cleanQuotes(str), operator: o };
+            this.setState((oldState) => {
+                const cnds_last = oldState.cnds_last ? [...oldState.cnds_last] : [{operand: []}];
+                cnds_last[idx].id = idx + 1;
+                if(typeof cnds_last[idx].operand === 'object') {
+                    cnds_last[idx].operand.push(condition);
+                } else {
+                    cnds_last[idx].operand = [condition];
+                }
+                return {...oldState, cnds_last: [...cnds_last]};
             });
         }
-
-        if (regex.exec(str) === null) {
-            let cnds: string[] = [];
-            cnds = this.extractCO(str, '');
-            const formatted: any = [];
-            cnds.map((cnd: any, idx) => {
-                let obj;
-                if (cnd.operand && cnd.operator) {
-                    obj = { operator: cnd.operator, operand: cnd.operand, id: idx + 1 };
-                } else {
-                    obj = { operand: cnd.operand, id: idx + 1 };
-                }
-                formatted.push(obj);
-                return true;
-            })
-            if (cnds.length === 0) {
-                conditions.push({ operand: this.cleanQuotes(str) });
-            } else {
-                conditions.push({ operand: [...formatted] });
-            }
-        }
-
-        const cnds = conditions.map((c, i) => {
-            return { ...c, id: i + 1 }
-        });
-
-        return cnds;
     }
-
 
     cleanQuotes(str: string) {
         const s = str.trim()
@@ -605,7 +603,7 @@ class Builder extends React.Component<any, IState> {
 
         const result: any = regex.exec(str);
         let operator, operand, newStr;
-
+console.log(result);
         if (result !== null) {
             operator = result[0];
             newStr = str.substring(result['index'] + operator.length).trim();
@@ -632,13 +630,17 @@ class Builder extends React.Component<any, IState> {
 
     extractCObject = (str: string = '') => {
         const regex = /\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)/g;
-        if (regex.exec(str) === null) { // When there is not parenthesis
-            this.formCObject(str);
-        } else { // When there is parenthesis
-            this.setState((oldState) => {
-                return {...oldState, conds: this.getConditionObject(str)};
-            });
+        try{
+            if (regex.exec(str) === null) { // When there is not parenthesis
+                console.log('str', str);
+                this.formCObject(str);
+            } else { // When there is parenthesis
+                this.getConditionObject(str);
+            }
+        } catch(error) {
+            console.log('Error', error);
         }
+
     }
 
 
