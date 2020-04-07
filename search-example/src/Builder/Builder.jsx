@@ -692,9 +692,6 @@ class Builder extends React.Component {
                                                             </div>
                                                             <div>
                                                                 <div onClick={() => this.removeSingleCondition(c.id, idx)}><img className="small-icon" src={Images.close} alt="close" /></div>
-                                                                <div onClick={() => this.handleBookmark(cn, c.id, idx)}>
-                                                                    <img className="small-icon" src={cn && cn.bookmarked ? Images.bookmarkSelected : Images.bookmark} alt="bookmark" />
-                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
